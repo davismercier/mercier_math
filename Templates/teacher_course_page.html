@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h5>{{ course_name }}</h5>
+<h6>Course ID: {{ course_id }}</h6>
+
+    <p><button id="edit_course_button">Edit Course Name</button>
+    <button id="delete_course_button">Delete Course</button></p>
+
+<form id = 'edit_delete_course_form' action = 'http://localhost:5000/edit_delete_course' method="post" style="display: none">
+    <h5>Edit Course Name:</h5>
+    <p>Course Name: <input type="text" id="course_name" name="course_name" value="{{course_name}}"></p>
+    <input type="hidden" name="course_id" id="course_id" value="{{course_id}}">
+    <input type="hidden" name="action_type" id="action_type">
+    <input type="submit">
+</form>
+
+<form id="remove_student_form" name="remove_student_form" action='/remove_students' method="post">
+    <input type="hidden" name="course_id" id="course_id_of_students_to_remove" value="{{course_id}}">
+    <input type="hidden" id="students_to_remove" name="students_to_remove">
+</form>
+
+<table>
+    <tr>
+        <th></th>
+        <th>Student:</th>
+        {% for assignment in teacher_user.courses[course_id].assignments.values() %}
+        <th>
+            <form id="assignment_{{assignment.assignment_id}}" action="/edit_assignment" method="post">
+                <input type="hidden" name="assignment_id" value={{assignment.assignment_id}}>
+                <a href="#" onclick="document.getElementById('assignment_' + {{assignment.assignment_id}}).submit()">{{assignment.name}}</a>
+            </form>
+        </th>
+        {% endfor %}
+    </tr>
+    {% for student in teacher_user.courses[course_id].students %}
+    <tr>
+        <td>
+             <input type="hidden" name="course_id" value="{{course_id}}">
+             <input type="checkbox" id="{{ student.student_id }}" name = "remove_student_checkboxes" value = "{{ student.student_id }}">
+        </td>
+        <td>
+            <form id="student_{{student.student_id}}" action="/edit_student" method="post">
+                <input type="hidden" name="student_id" value={{student.student_id}}>
+                <a href="#" onclick="document.getElementById('student_' + {{student.student_id}}).submit()">
+                    {{student.first_name}} {{student.last_name}}</a>
+            </form>
+        </td>
+            {% for assignment in student.courses[course_id].assignments.values() %}
+            <td>{{assignment.grade}}</td>
+            {% endfor %}
+        {% endfor %}
+    </tr>
+</table>
+<br>
+<p><button id="remove_student_button" style="display: none">Remove Students</button></p>
+
+<script>
+    var remove_student_button = document.getElementById('remove_student_button')
+    var remove_student_form = document.getElementById('remove_student_form');
+    var remove_student_checkboxes = document.querySelectorAll('input[type=checkbox][name=remove_student_checkboxes]');
+    var remove_students_to_submit = document.getElementById('students_to_remove');
+    var edit_course_button = document.getElementById('edit_course_button')
+    var delete_course_button = document.getElementById('delete_course_button')
+    var edit_delete_course_form = document.getElementById('edit_delete_course_form')
+    var action_type = document.getElementById('action_type')
+
+    remove_student_button.addEventListener("click", ()=> {
+        remove_student_form.submit();
+    });
+
+    edit_course_button.addEventListener("click", ()=> {
+        action_type.value = "Edit"
+        edit_delete_course_form.style.display = "block";
+    });
+
+    delete_course_button.addEventListener("click", ()=> {
+        if(confirm('You are about to delete the course {{course_name}}, this cannot be undone!')) {
+            action_type.value = "Delete";
+            edit_delete_course_form.submit();
+        } else {}
+    });
+
+     var_students_to_remove = []
+
+     for (var checkbox of remove_student_checkboxes) {
+            checkbox.addEventListener('change', function(event) {
+                students_to_remove = [];
+                var student_selected = false;
+                for (var checkbox of remove_student_checkboxes) {
+                    if (checkbox.checked) {
+                        students_to_remove.push(checkbox.value);
+                        remove_students_to_submit.value = students_to_remove
+                        remove_student_button.style.display = 'block';
+                        student_selected = true;
+                    }
+                }
+                if (student_selected == false) {
+                    remove_student_button.style.display = 'none';
+                }
+
+            });
+        }
+</script>
+{% endblock %}

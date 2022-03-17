@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    {% if error_message %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ error_message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <form id="add_course_form" name="add_course_form" action="/add_course" method="post">
+        <h5>Add Course:</h5>
+            <p>Enter ID of course: <input type="text" id="course_to_add" name="course_to_add"></p>
+            <input type="submit" value="Enroll in Course">
+    </form>
+
+<br><br>
+    <h5>Courses</h5>
+    <ul>
+    {% for course in student_user.courses.values() %}
+        <h4>{{ course.name }}</h4>
+            <h6>Assignments</h6>
+            <ol>
+                {% for assignment in course.assignments.values() %}
+                <li>{{ assignment.name }} is due on {{assignment.due_date}} and current grade is {{assignment.grade}}</li>
+                    <ul>
+                    {% for question in assignment.questions %}
+                        <li><a href="ask_question/{{course.course_id}}/{{assignment.assignment_id}}/{{question['title']}}/{{question['id']}}">{{ question['title'] }}</a> Status: {{ question['status'] }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endfor %}
+            </ol>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

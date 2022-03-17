@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+ <p>{{ question.instructions }}</p>
+
+    <span id="problem">{{ question.equation_to_display }}</span>
+
+    <form onsubmit="get_user_answer()" action = 'http://localhost:5000/grader' method="post">
+        </br>
+        <div id = 'answer_box_div'><span>x = </span></div>
+        </br>
+        <input type = 'hidden' name = 'user_answer' id = 'user_answer'>
+        <p><input type = 'submit' value = 'submit'></p>
+    </form>
+
+    <p>
+        <button id = 'add_answer_box'>+</button>
+        <button id = 'remove_answer_box'>-</button>
+    </p>
+    <br><br>
+
+    <h4>{{ assignment.name }}</h4>
+    <ol>
+    {% for question in assignment.questions %}
+        <li><a href="http://localhost:5000/ask_question/{{course.course_id}}/{{assignment.assignment_id}}/{{question['title']}}/{{question['id']}}">{{ question['title'] }}</a> Status: {{ question['status'] }}</li>
+    {% endfor %}
+    </ol>
+
+    <script src = "{{ javascript_file }}"></script>
+
+{% endblock %}
+
+</body>
+</html>

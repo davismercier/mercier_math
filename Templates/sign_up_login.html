@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href = "{{ url_for('static', filename = 'styles.css') }}"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <title>Welcome to Mercier Math!</title>
+</head>
+
+<body>
+
+<h1>Welcome to Mercier Math</h1>
+
+{% if error_message %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ error_message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}
+
+<div class = "sign_in_forms">
+    <h3>Sign up for an account!</h3>
+
+    <form action = 'http://localhost:5000/register_user' method = 'POST'>
+        <p>First Name: <input type = 'text' name = 'first_name'></p>
+        <p>Last Name: <input type = 'text' name = 'last_name'></p>
+        <p>Email: <input type = 'text' name = 'email'></p>
+
+        <label for="sign_up_pwd">Password:</label>
+        <input type="password" id="sign_up_pwd" name="password">
+
+        <p>I am a:
+        <input type="radio" id="student" name="user_type" value="Students">
+            <label for="student">student</label>
+        <input type="radio" id="teacher" name="user_type" value="Teachers">
+            <label for="teacher">teacher</label>
+        </p>
+
+        <div id = "teacher_specific_info" style = "display: none">
+            <p>Course Name: <input type="text" id="course_name" name="course"></p>
+            <p>Period: <input type="text" id = "course_period" name="teacher's_period"></p>
+        </div>
+
+        <div id = "student_specific_info" style = "display: none">
+            <p>Course ID: <input type="text" name = "course_id"></p>
+        </div>
+
+        <p><input type = 'submit' value = 'submit'></p>
+
+        <script>
+            $("#student").click(function(){
+                $('#teacher_specific_info').css("display", "none");
+                $('#student_specific_info').css("display", "inline");
+            })
+            $("#teacher").click(function(){
+                $('#student_specific_info').css("display", "none");
+                $('#teacher_specific_info').css("display", "inline");
+            })
+        </script>
+    </form>
+</div>
+
+<div class = "sign_in_forms">
+    <h3>Login to existing account!</h3>
+
+    <form action = 'http://localhost:5000/login_user' method = 'POST'>
+        <p>Email: <input type = 'text' name = 'email'></p>
+        <label for="login_pwd">Password:</label>
+        <input type="password" id="login_pwd" name="password">
+        <p><input type = 'submit' value = 'submit'></p>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+
+</body>
+</html>

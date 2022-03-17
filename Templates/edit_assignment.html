@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="form_div">
+
+        <h4>edit assignment: {{assignment.name}}</h4>
+            <p><button id="delete_assignment_button">Delete Assignment</button></p>
+
+        <form id = 'assignment_edit_delete' action = 'http://localhost:5000/update_delete_assignment' method="post">
+
+            <label for="assignment_name">Assignment Name: </label>
+            <input type="text" name="assignment_name" id="assignment_name" value="{{assignment.name}}"><br>
+
+            <input type="hidden" name="assignment_id" value="{{assignment.assignment_id}}">
+            <input type="hidden" name="action_type" id="action_type" value="Edit">
+
+            <label for="due_date">Due Date: </label>
+            <input type="date" name="due_date" id="due_date" value="{{assignment.due_date}}"><br>
+
+            {% for course in teacher_user.courses.values() %}
+            <input type="checkbox" id="{{ course.name}}" name="course_ids" value="{{ course.course_id }}"
+            {% if course.course_id in course_ids %}
+                checked="true"
+            {% endif %}
+            >
+            <label for="{{ course.name }}"> {{ course.name }}</label><br>
+            {% endfor %}
+
+        <br><br>
+        <div id="question_bank"></div>
+
+            {% for category in categories %}
+            <h6>{{ category }}</h6>
+            <ul class = questions_in_category>
+                {% for question in all_questions.values() %}
+                    {% if question.category == category %}
+                        <li>
+                            <a href = '/questions/{{question.title}}'
+                               data-id="{{ question.id }}"
+                                >{{question.title}}</a>
+                            <input type="checkbox"
+                                   id="{{ question.id }}"
+                                   name = "questions"
+                                   value = "{{ question.id }},{{ question.title}},incomplete"
+                                   data-title="{{ question.title }}"
+                                        {% if question.id in question_ids %}
+                                            checked="true"
+                                        {% endif %}>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endfor %}
+            <p><input type = 'submit' value = 'Edit Assignment'></p>
+        </form>
+    </div>
+
+    <script>
+        var delete_assignment_button = document.getElementById('delete_assignment_button');
+        var action_type = document.getElementById('action_type');
+        var assignment_edit_delete_form = document.getElementById('assignment_edit_delete');
+
+        delete_assignment_button.addEventListener('click', ()=> {
+            if(confirm('You are about to delete the assignment {{assignment.name}}, this cannot be undone!')) {
+                action_type.value = "Delete";
+                assignment_edit_delete_form.submit()
+            } else {}
+        });
+    </script>
+{% endblock %}

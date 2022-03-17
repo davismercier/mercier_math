@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <p>Logged in as {{teacher_user.first_name}} {{teacher_user.last_name}}</p>
+
+    {% if error_message %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ error_message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <div class="form_div">
+        <p><button id="create_course_button">Create Course</button>
+
+        <form id = 'create_course_form' action = 'http://localhost:5000/create_course' method="post" style="display: none">
+            <p>Course Name: <input type="text" id="course_name" name="course"> Period: <input type="text" id = "course_period" name="teacher's_period"> </p>
+            <input type="submit">
+        </form>
+    </div>
+
+    <h5>Courses</h5>
+    <ul>
+    {% for course in teacher_user.courses.values() %}
+        <li><a href = "http://localhost:5000/course/{{course.name}}/{{course.course_id}}">{{ course.name }}</a></li><br>
+    {% endfor %}
+    </ul>
+
+    <button id="create_assignment">Create Assignment</button>
+    </br></br>
+
+    <div class="form_div">
+        <form id = 'assignment_submit' action = 'http://localhost:5000/create_assignment' method="post" style="display: none">
+            <h5>Create Assignment</h5>
+
+            <label for="assignment_name">Assignment Name: </label>
+            <input type="text" name="assignment_name" id="assignment_name"><br>
+
+            <label for="due_date">Due Date: </label>
+            <input type="date" name="due_date" id="due_date"><br>
+
+            {% for course in teacher_user.courses.values() %}
+            <input type="checkbox" id="{{ course.name}}" name="course_ids" value="{{ course.course_id }}">
+            <label for="{{ course.name }}"> {{ course.name }}</label><br>
+            {% endfor %}
+
+            <br><br>
+            <div id="questions_in_assignment">
+                <h6>Questions in Assignment:</h6>
+                <ol id = "assignment_question_list"></ol>
+            </div>
+
+        <br>
+        <div id="question_bank"></div>
+
+            {% for category in categories %}
+            <h6>{{ category }}</h6>
+            <ul class = questions_in_category>
+                {% for question in all_questions.values() %}
+                    {% if question.category == category %}
+                        <li>
+                            <span data-id="{{ question.id }}">{{question.title}}</span>
+                            <input type="checkbox" id="{{ question.id }}" name = "questions" value = "{{ question.id }},{{ question.title}},incomplete" data-title="{{ question.title }}">
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endfor %}
+            <p><input type = 'submit' value = 'submit'></p>
+        </form>
+    </div>
+
+
+    <script>
+        var create_course_button = document.getElementById('create_course_button');
+        var create_course_form = document.getElementById('create_course_form');
+        var assignment_button = document.getElementById('create_assignment');
+        var assignment_submit_form = document.getElementById('assignment_submit');
+        var add_question_checkboxes = document.querySelectorAll('input[type=checkbox][name=questions]');
+        var assignment_question_list = document.getElementById('assignment_question_list');
+
+        create_course_button.addEventListener('click', ()=> {
+            create_course_form.style.display = 'block';
+        });
+
+        assignment_button.addEventListener('click', ()=> {
+            assignment_submit_form.style.display = 'block';
+        });
+
+        for (var checkbox of add_question_checkboxes) {
+            checkbox.addEventListener('change', function(event) {
+                if (event.target.checked) {
+                    assignment_question_list.innerHTML += "<li id='assignment_question_" + event.target.value + "'>" + event.target.dataset.title + "</li>";
+                }
+                else {
+                    var question_to_remove = document.getElementById('assignment_question_' + event.target.value);
+                    question_to_remove.remove()
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+

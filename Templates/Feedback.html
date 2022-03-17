@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <p> {{ feedback }}</p>
+    <p> User answer is: {{user_answer}} </p>
+    <p> Question answer is: {{question.answer}} </p>
+
+    <a href = "/ask_question/{{course_id}}/{{assignment_id}}/{{question.title}}/{{question.id}}">Try a similar question</a>
+
+    <a href ='/student_home'>Return to Assignment Menu</a>
+{% endblock %}
